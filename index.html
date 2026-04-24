@@ -862,32 +862,24 @@ function updateCustomAdmin() {
 }
 
 async function uploadToPastefy(script) {
-    try {
-        const response = await fetch("/api/paste", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                title: "Vinhub Script - " + new Date().toLocaleDateString(),
-                content: script,
-                encrypted: false,
-                expireAt: "1D"
-            })
-        });
+  try {
+    const response = await fetch("/api/paste", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: "Vinhub Script",
+        content: script,
+      }),
+    });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Failed to upload to Pastefy: ${errorData.message || response.statusText}`);
-        }
+    if (!response.ok) throw new Error("Failed to upload");
 
-        const data = await response.json();
-        return data.paste.raw_url;
-
-    } catch (error) {
-        console.warn("Pastefy upload error:", error);
-        return null;
-    }
+    const data = await response.json();
+    return data.url; // URL du paste généré
+  } catch (error) {
+    console.error("Upload error:", error);
+    return null;
+  }
 }
 
 async function generate() {
