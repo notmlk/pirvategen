@@ -862,11 +862,12 @@ function updateCustomAdmin() {
 }
 
 async function uploadToPastefy(script) {
-    const response = await fetch("/api/paste", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+    try {
+        const response = await fetch("/api/paste", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
                 title: "Vinhub Script - " + new Date().toLocaleDateString(),
                 content: script,
@@ -882,6 +883,7 @@ async function uploadToPastefy(script) {
 
         const data = await response.json();
         return data.paste.raw_url;
+
     } catch (error) {
         console.warn("Pastefy upload error:", error);
         return null;
