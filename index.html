@@ -509,6 +509,41 @@
     cursor: pointer;
     white-space: nowrap;
   }
+  #pasteCustomListContainer {
+    margin-top: 1rem;
+  }
+  #pasteCustomListContainer textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.72rem 1rem;
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.88rem;
+    min-height: 100px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  #pasteCustomListContainer textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.25);
+  }
+  #pasteCustomListContainer button {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.9rem;
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 7px;
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    white-space: nowrap;
+  }
 </style>
 </head>
 <body>
@@ -529,6 +564,13 @@
       <div id="customBrainrotInput">
         <input type="text" id="customBrainrotName" placeholder="Add custom brainrot name...">
         <button onclick="addCustomBrainrot()">Add</button>
+      </div>
+      <div id="pasteCustomListContainer">
+        <textarea id="pasteCustomListTextarea" placeholder='Paste your custom list here, e.g.:
+["Meowl"] = true,
+["Skibidi Toilet"] = true,
+["Strawberry Elephant"] = true,'></textarea>
+        <button onclick="parsePastedList()">Paste Custom List</button>
       </div>
       <div class="meta-row">
         <span class="sel-count"><span id="selNum">0</span> selected</span>
@@ -863,6 +905,28 @@ function addCustomBrainrot() {
         renderList(document.getElementById('searchBox').value);
     }
     document.getElementById('customBrainrotName').value = '';
+}
+
+function parsePastedList() {
+    const textarea = document.getElementById('pasteCustomListTextarea');
+    const text = textarea.value.trim();
+    if (!text) return;
+
+    const lines = text.split('\n');
+    const regex = /\[\"([^\"]+)\"\][^\S\n]*=[^\S\n]*true,?/g;
+
+    lines.forEach(line => {
+        const match = regex.exec(line);
+        if (match && match[1]) {
+            const name = match[1].trim();
+            if (name && !selected.has(name)) {
+                selected.add(name);
+            }
+        }
+    });
+
+    renderList(document.getElementById('searchBox').value);
+    textarea.value = '';
 }
 
 function setAdminMode(mode) {
