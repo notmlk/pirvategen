@@ -863,7 +863,7 @@ function updateCustomAdmin() {
 
 async function uploadToPastefy(script) {
   try {
-    const response = await fetch("/api/paste", {
+    const response = await fetch("api/paste", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
