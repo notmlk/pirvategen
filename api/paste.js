@@ -1,29 +1,34 @@
+// api/paste.js
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  try {
-    const { script } = req.body;
+  const { title, content } = req.body;
+  const API_KEY = process.env.PASTEFY_API_KEY; // Clé stockée dans les variables d'environnement
 
-    const response = await fetch("https://pastefy.app/api/v2/paste", {
-      method: "POST",
+  try {
+    const response = await fetch('https://pastefy.app/api/pastes', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.PASTEFY_KEY}`
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`, // Si l'API le nécessite
       },
       body: JSON.stringify({
-        title: "Vinhub Script",
-        content: script,
-        encrypted: false,
-        expireAt: "1D"
-      })
+        content,
+        expire_date: '1D',
+        title,
+      }),
     });
 
-    const data = await response.json();
-    res.status(200).json(data);
+    if (!response.ok) {
+      throw new Error(`Pastefy API error: ${response.statusText}`);
+    }
 
-  } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    const data = await response.json();
+    res.status(200).json({ url: `https://pastefy.app/${data.data.paste.id}/raw` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to upload to Pastefy' });
   }
 }
