@@ -780,7 +780,7 @@ function canGenerateScript() {
     }
 
     const currentTime = new Date().getTime();
-    const oneHour = 60 * 60 * 1000;
+    const oneHour = 60 * 1000;
     const timeElapsed = currentTime - lastGeneratedTime;
 
     return timeElapsed >= oneHour;
